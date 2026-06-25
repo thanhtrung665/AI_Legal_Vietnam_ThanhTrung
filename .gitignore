@@ -1,0 +1,44 @@
+# ==========================================
+# 1. MÔI TRƯỜNG ẢO & THƯ VIỆN (BẮT BUỘC BỎ QUA)
+# ==========================================
+# Thư mục chứa thư viện Python (rất nặng)
+venv/
+env/
+.env_python/
+.venv/
+
+# Thư mục cache của Python giúp chạy code nhanh hơn (tự sinh ra)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# 2. FILE BẢO MẬT (TUYỆT ĐỐI KHÔNG PUSH)
+# ==========================================
+# Chứa API Key (OpenAI, Gemini), mật khẩu Database
+.env
+.env.local
+secrets.json
+
+# ==========================================
+# 4. KẾT QUẢ ĐẦU RA & LOGS (FILE TỰ SINH)
+# ==========================================
+# File nén và file kết quả sinh ra trong quá trình test
+submission.zip
+results.json
+test_output/
+
+# File ghi chú lỗi (Logs)
+*.log
+
+# ==========================================
+# 5. FILE HỆ THỐNG CỦA HỆ ĐIỀU HÀNH & IDE
+# ==========================================
+# Hệ điều hành macOS và Windows
+.DS_Store
+Thumbs.db
+
+# Cấu hình cá nhân của phần mềm code (VSCode, PyCharm)
+.vscode/
+.idea/
+*.swp

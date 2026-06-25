@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+qdrant-client
+langchain
+langchain-qdrant
+langchain-community
+langchain-huggingface
+sentence-transformers
+transformers
+torch
+rank_bm25
+python-dotenv
+datasets
+underthesea
+pydantic
