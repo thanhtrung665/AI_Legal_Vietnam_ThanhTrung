@@ -13,3 +13,6 @@ python-dotenv
 datasets
 underthesea
 pydantic
+google-genai
+python-dotenv 
+markitdown
