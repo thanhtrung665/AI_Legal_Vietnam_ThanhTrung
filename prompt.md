@@ -9,18 +9,19 @@ Hãy làm việc với vai trò một AI Engineer và Quản lý dự án AI có
 - Các kiến thức liên quan mà tôi được training trong cuộc thi bạn xem ở các file PDF sau: C:\Users\asus\Downloads\AI_Legal\Kỹ thuật truy vấn.pdf, C:\Users\asus\Downloads\AI_Legal\Triển khai hệ thống lên Production.pdf,
 - File câu hỏi để làm kiểm tra hệ thống ban tổ chức cung cấp là file Json này: C:\Users\asus\Downloads\AI_Legal\R2AIStage1DATA.json
 - Ngoài ra tôi có lưu ý một xíu quy tắc ở file : C:\Users\asus\Downloads\AI_Legal\AGENT.md, bạn có thể sửa, bổ sung hoặc cải thiện trong quá trình thực hiện xây dựng hệ thống nhé.
+
 TỔNG QUAN TECH STACK (CÔNG NGHỆ KHUYÊN DÙNG)
 Orchestration Framework: LlamaIndex (Vượt trội hơn LangChain trong việc xử lý Hierarchical Data và Parent-Child Retrieval).
 
-Data Parsing: PyMuPDF (pdf), python-docx (docx), regex (nhận diện cấu trúc luật).
+Data Parsing: markitdown,  regex (nhận diện cấu trúc luật).
 
 Vector Database: Qdrant (Hỗ trợ Hybrid Search và Metadata Filtering cực tốt, dễ triển khai local qua Docker).
 
-Embedding Model: BAAI/bge-m3 (Hỗ trợ đa ngôn ngữ, rất mạnh tiếng Việt, có cả dense vector và sparse vector cho từ khóa).
+Embedding Model: BAAI/bge-m3 (Hỗ trợ đa ngôn ngữ, rất mạnh tiếng Việt, có cả dense vector và sparse vector cho từ khóa) từ huggingface   
 
-Reranker Model: BAAI/bge-reranker-m3 hoặc Cross-Encoder chuyên biệt.
+Reranker Model: BAAI/bge-reranker-m3 từ huggingface 
 
-LLM (Generation): Qwen2.5-7B/14B-Instruct (mã nguồn mở, tiếng Việt tốt, follow format JSON cực chuẩn) hoặc Gemini 1.5 Flash/Pro (nếu BTC cho phép dùng API).
+LLM (Generation): Qwen2.5-7B/14B-Instruct (mã nguồn mở, tiếng Việt tốt, follow format JSON cực chuẩn) từ huggingface 
 
 Structured Output Enforcer: Pydantic kết hợp Instructor hoặc tính năng Function Calling mặc định của model.
 

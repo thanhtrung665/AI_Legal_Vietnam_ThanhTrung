@@ -10,7 +10,7 @@
 
 **Reranker Model:** BAAI/bge-reranker-m3 hoặc Cross-Encoder chuyên biệt.
 
-**LLM (Generation):** Qwen2.5-7B/14B-Instruct (mã nguồn mở, tiếng Việt tốt, follow format JSON cực chuẩn) hoặc Gemini 1.5 Flash/Pro (nếu BTC cho phép dùng API).
+**LLM (Generation):** Qwen2.5-7B/14B-Instruct (mã nguồn mở, tiếng Việt tốt, follow format JSON cực chuẩn) từ huggingface 
 
 **Structured Output Enforcer:** Pydantic kết hợp Instructor hoặc tính năng Function Calling mặc định của model.
 
