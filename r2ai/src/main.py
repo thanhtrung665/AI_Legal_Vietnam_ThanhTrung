@@ -19,8 +19,10 @@ OUTPUT_ZIP = PROJECT_ROOT / "submission.zip"
 
 def process_question(retriever: LegalRetriever, generator: LegalGenerator, q_id: int, question: str) -> dict:
     try:
-        retrieved_nodes = retriever.retrieve(question)
-        legal_answer = generator.generate_answer(question, retrieved_nodes)
+        import torch
+        with torch.no_grad():
+            retrieved_nodes = retriever.retrieve(question)
+            legal_answer = generator.generate_answer(question, retrieved_nodes)
         
         return {
             "id": q_id,
@@ -62,7 +64,7 @@ def main():
     # Ví dụ ở Phase 2 bạn tạo "legal_vn" thì ở đây phải là "legal_vn"
     index = build_qdrant_index(nodes=[], collection_name="legal_vn_test")
     
-    retriever = LegalRetriever(index=index, retrieve_top_k=20, rerank_top_k=5)
+    retriever = LegalRetriever(index=index, retrieve_top_k=10, rerank_top_k=5)
     generator = LegalGenerator()
     
     if not INPUT_JSON.exists():

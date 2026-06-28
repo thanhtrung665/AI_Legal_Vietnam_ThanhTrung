@@ -1,0 +1,17 @@
+python-dotenv
+torch
+qdrant-client
+llama-index-core
+llama-index-vector-stores-qdrant
+llama-index-embeddings-huggingface
+llama-index-llms-huggingface
+fastembed
+sentence-transformers
+transformers
+accelerate
+bitsandbytes
+pydantic
+tqdm
+langchain-community
+langchain-qdrant
+pandas

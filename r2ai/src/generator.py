@@ -58,10 +58,13 @@ class LegalGenerator:
             model_name=model,
             tokenizer_name=model,
             model_kwargs={"quantization_config": quantization_config},
-            generate_kwargs={"temperature": 0.01, "do_sample": False},
+            generate_kwargs={"do_sample": False},
             max_new_tokens=1024,
             device_map="auto"
         )
+        # Đưa LLM về chế độ eval
+        if hasattr(self.llm, '_model'):
+            self.llm._model.eval()
         
     def _extract_references(self, nodes: List[NodeWithScore]) -> Tuple[List[str], List[str]]:
         relevant_docs = set()
@@ -124,50 +127,4 @@ class LegalGenerator:
         )
 
 
-if __name__ == "__main__":
-    from llama_index.core.schema import TextNode
-    
-    print("="*50)
-    print("BẮT ĐẦU UNIT TEST PHASE 4: LLM GENERATOR")
-    print("="*50)
-    
-    # Tạo dữ liệu giả (Mock Data) đóng vai trò là Top 2 Chunks sau khi truy hồi
-    mock_nodes = [
-        NodeWithScore(
-            node=TextNode(
-                text="Doanh nghiệp siêu nhỏ, doanh nghiệp nhỏ và doanh nghiệp vừa được xác định theo lĩnh vực nông nghiệp, lâm nghiệp, thủy sản; công nghiệp và xây dựng; thương mại và dịch vụ.",
-                metadata={
-                    "mã_văn_bản": "Luật 04/2017/QH14",
-                    "tên_văn_bản": "Luật hỗ trợ doanh nghiệp nhỏ và vừa",
-                    "điều": "Điều 4. Tiêu chí xác định doanh nghiệp nhỏ và vừa"
-                }
-            ),
-            score=0.95
-        ),
-        NodeWithScore(
-            node=TextNode(
-                text="Việc hỗ trợ doanh nghiệp nhỏ và vừa phải tôn trọng quy luật thị trường, phù hợp với điều ước quốc tế mà nước Cộng hòa xã hội chủ nghĩa Việt Nam là thành viên.",
-                metadata={
-                    "mã_văn_bản": "Luật 04/2017/QH14",
-                    "tên_văn_bản": "Luật hỗ trợ doanh nghiệp nhỏ và vừa",
-                    "điều": "Điều 5. Nguyên tắc hỗ trợ doanh nghiệp nhỏ và vừa"
-                }
-            ),
-            score=0.85
-        )
-    ]
-    
-    query = "Nguyên tắc hỗ trợ doanh nghiệp nhỏ và vừa có cần tôn trọng quy luật thị trường không?"
-    
-    # Lưu ý: Unit Test này sẽ throw Error nếu bạn chưa bật vLLM local tại port 8000.
-    # Tuy nhiên Code Rule-based Extraction vẫn sẽ chạy mượt mà.
-    generator = LegalGenerator()
-    
-    print(f"\n[INFO] Câu hỏi: {query}")
-    print("[INFO] Đang sinh câu trả lời...")
-    
-    final_output = generator.generate_answer(query, mock_nodes)
-    
-    print("\n[SUCCESS] Cấu trúc Output Pydantic:")
-    # Chuyển model thành JSON để dễ đọc
-    print(json.dumps(final_output.model_dump(), ensure_ascii=False, indent=2))
+

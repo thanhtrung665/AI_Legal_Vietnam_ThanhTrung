@@ -30,6 +30,8 @@ class LegalRetriever:
             device=device,
             model_kwargs=model_kwargs
         )
+        # Đưa Reranker về chế độ eval chống tốn VRAM cho gradients
+        self.reranker.model.eval()
         
     def retrieve(self, query: str) -> List[NodeWithScore]:
         """
@@ -99,45 +101,4 @@ class LegalRetriever:
         merged_nodes.sort(key=lambda x: x.score, reverse=True)
         return merged_nodes
 
-if __name__ == "__main__":
-    from indexer import build_qdrant_index, init_settings
-    from data_pipeline import process_markdown_to_nodes
-    from pathlib import Path
-    
-    print("="*50)
-    print("BẮT ĐẦU UNIT TEST PHASE 3: ADVANCED RETRIEVAL")
-    print("="*50)
-    
-    try:
-        init_settings()
-        
-        BASE_DIR = Path(__file__).resolve().parent.parent
-        sample_file = BASE_DIR / "data" / "markdown_data" / "04_2017_QH14.md"
-        
-        if sample_file.exists():
-            print("[INFO] Đang load dữ liệu và index...")
-            nodes = process_markdown_to_nodes(str(sample_file))
-            # Test với bộ dữ liệu nhỏ
-            index = build_qdrant_index(nodes, collection_name="legal_vn_test_retriever", overwrite=True)
-            
-            # Khởi tạo LegalRetriever
-            retriever = LegalRetriever(index=index, retrieve_top_k=10, rerank_top_k=5)
-            
-            query = "Nhà nước hỗ trợ doanh nghiệp nhỏ và vừa theo nguyên tắc nào?"
-            print(f"\n[INFO] Truy vấn: '{query}'")
-            
-            results = retriever.retrieve(query)
-            
-            print(f"\n[SUCCESS] Kết quả sau khi Retrieve -> Rerank -> AutoMerge:")
-            for i, res in enumerate(results, 1):
-                dieu = res.node.metadata.get('điều', 'Unknown')
-                ma_vb = res.node.metadata.get('mã_văn_bản', 'Unknown')
-                print(f"\n--- TOP {i} | Score: {res.score:.4f} ---")
-                print(f"Mã VB: {ma_vb} | Điều: {dieu}")
-                print(f"Content: {res.node.text[:200]}...")
-                
-        else:
-            print(f"[ERROR] Không tìm thấy file {sample_file}")
-            
-    except Exception as ex:
-        print(f"[ERROR] Quá trình chạy thất bại: {ex}")
+
