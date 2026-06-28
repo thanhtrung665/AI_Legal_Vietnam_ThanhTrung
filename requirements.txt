@@ -14,5 +14,12 @@ datasets
 underthesea
 pydantic
 google-genai
-python-dotenv 
 markitdown
+
+# Thư viện phục vụ cho R2AI Chatbot Pipeline (LlamaIndex & Qdrant Hybrid)
+llama-index-core
+llama-index-vector-stores-qdrant
+llama-index-embeddings-huggingface
+llama-index-llms-openai-like
+fastembed
+tqdm
