@@ -1,4 +1,7 @@
 import os
+# [FIX OOM]: Cấu hình tối ưu chống phân mảnh VRAM trước khi import torch
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
 import json
 import zipfile
 from pathlib import Path
@@ -60,7 +63,7 @@ def main():
     index = build_qdrant_index(nodes=[], collection_name="legal_vn_test")
     
     retriever = LegalRetriever(index=index, retrieve_top_k=20, rerank_top_k=5)
-    generator = LegalGenerator(llm_url="http://localhost:8000/v1")
+    generator = LegalGenerator()
     
     if not INPUT_JSON.exists():
         raise FileNotFoundError(f"Không tìm thấy file {INPUT_JSON}")
@@ -80,6 +83,11 @@ def main():
         result = process_question(retriever, generator, q_id, question)
         results.append(result)
         
+        # [FIX OOM]: Dọn rác VRAM sau mỗi câu hỏi để tránh rò rỉ bộ nhớ
+        import torch
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
         if len(results) % 100 == 0:
             with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, indent=4)

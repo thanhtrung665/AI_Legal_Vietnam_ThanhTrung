@@ -4,10 +4,19 @@ from pydantic import BaseModel, Field
 from llama_index.core.schema import NodeWithScore
 from llama_index.core.llms import ChatMessage, MessageRole
 
+import os
+from pathlib import Path
+
 try:
-    from llama_index.llms.openai_like import OpenAILike
+    from dotenv import load_dotenv
+    import torch
+    from transformers import BitsAndBytesConfig
+    from llama_index.llms.huggingface import HuggingFaceLLM
 except ImportError:
-    raise ImportError("Vui lòng cài đặt: pip install llama-index-llms-openai-like")
+    raise ImportError("Vui lòng cài đặt: pip install python-dotenv torch transformers bitsandbytes accelerate llama-index-llms-huggingface")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR.parent / ".env")
 
 class LegalAnswer(BaseModel):
     answer: str = Field(description="Câu trả lời sinh ra từ LLM")
@@ -31,16 +40,27 @@ QUY TẮC BẮT BUỘC (CRITICAL RULES):
 """
 
 class LegalGenerator:
-    def __init__(self, llm_url: str = "http://localhost:8000/v1", api_key: str = "fake", model: str = "Qwen/Qwen2.5-7B-Instruct"):
-        print(f"[INFO] Khởi tạo LLM kết nối tới: {llm_url} (Model: {model})")
-        self.llm = OpenAILike(
-            api_base=llm_url,
-            api_key=api_key,
-            model=model,
-            temperature=0.01,  # [TỐI ƯU]: Ép temperature gần 0 nhất có thể để đảm bảo tính Deterministic (chính xác tuyệt đối)
-            max_tokens=1024,
-            timeout=120,
-            max_retries=2 # Thêm cơ chế tự động thử lại nếu vLLM bị quá tải
+    def __init__(self, model: str = "Qwen/Qwen2.5-7B-Instruct"):
+        print(f"[INFO] Khởi tạo LLM HuggingFace (Model: {model}, 4-bit Quantization)")
+        
+        hf_token = os.getenv("HUGGINGFACE_TOKEN_API")
+        if hf_token:
+            os.environ["HF_TOKEN"] = hf_token
+            
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+        )
+        
+        self.llm = HuggingFaceLLM(
+            model_name=model,
+            tokenizer_name=model,
+            model_kwargs={"quantization_config": quantization_config},
+            generate_kwargs={"temperature": 0.01, "do_sample": False},
+            max_new_tokens=1024,
+            device_map="auto"
         )
         
     def _extract_references(self, nodes: List[NodeWithScore]) -> Tuple[List[str], List[str]]:
@@ -141,7 +161,7 @@ if __name__ == "__main__":
     
     # Lưu ý: Unit Test này sẽ throw Error nếu bạn chưa bật vLLM local tại port 8000.
     # Tuy nhiên Code Rule-based Extraction vẫn sẽ chạy mượt mà.
-    generator = LegalGenerator(llm_url="http://localhost:8000/v1")
+    generator = LegalGenerator()
     
     print(f"\n[INFO] Câu hỏi: {query}")
     print("[INFO] Đang sinh câu trả lời...")

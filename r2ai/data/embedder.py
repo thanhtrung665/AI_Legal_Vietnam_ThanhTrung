@@ -16,6 +16,10 @@ COLLECTION_NAME = "legal_vn_articles"
 
 def get_embeddings():
     """Khởi tạo BGE-M3 embedding model"""
+    hf_token = os.getenv("HUGGINGFACE_TOKEN_API")
+    if hf_token:
+        os.environ["HF_TOKEN"] = hf_token
+
     model_name = "BAAI/bge-m3"
     model_kwargs = {"device": "cpu"} # Thay bằng "cuda" nếu có GPU
     encode_kwargs = {"normalize_embeddings": True}

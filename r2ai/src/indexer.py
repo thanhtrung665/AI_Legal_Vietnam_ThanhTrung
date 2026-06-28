@@ -4,24 +4,33 @@ from pathlib import Path
 from typing import List
 
 try:
+    from dotenv import load_dotenv
     from qdrant_client import QdrantClient
     from llama_index.core import VectorStoreIndex, StorageContext, Settings
     from llama_index.vector_stores.qdrant import QdrantVectorStore
     from llama_index.embeddings.huggingface import HuggingFaceEmbedding
     from llama_index.core.schema import BaseNode
 except ImportError:
-    raise ImportError("Vui lòng cài đặt: pip install qdrant-client llama-index-vector-stores-qdrant llama-index-embeddings-huggingface fastembed")
+    raise ImportError("Vui lòng cài đặt: pip install python-dotenv qdrant-client llama-index-vector-stores-qdrant llama-index-embeddings-huggingface fastembed")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 QDRANT_DATA_DIR = BASE_DIR / "data" / "qdrant_db"
 
+# Load environment variables
+load_dotenv(BASE_DIR.parent / ".env")
+
 def init_settings():
     """Khởi tạo cấu hình LlamaIndex tối ưu VRAM."""
     
-    # Tự động chọn GPU nếu có, ngược lại dùng CPU
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"[INFO] Khởi tạo Embedding Model (BGE-M3) trên thiết bị: {device.upper()}")
+    # [FIX OOM]: Ép Embedding chạy trên CPU để nhường 12GB VRAM cho LLM Qwen
+    device = "cpu"
+    print(f"[INFO] Khởi tạo Embedding Model (BGE-M3) trên thiết bị: {device.upper()} (Tiết kiệm VRAM)")
     
+    # Set HF Token from .env if available
+    hf_token = os.getenv("HUGGINGFACE_TOKEN_API")
+    if hf_token:
+        os.environ["HF_TOKEN"] = hf_token
+        
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-m3",
         trust_remote_code=True,
@@ -35,8 +44,16 @@ def build_qdrant_index(nodes: List[BaseNode], collection_name: str = "legal_vn",
     Tạo hoặc kết nối Qdrant. 
     Lưu ý: Nếu overwrite=True, sẽ xóa Collection cũ để tránh duplicate data.
     """
-    os.makedirs(QDRANT_DATA_DIR, exist_ok=True)
-    client = QdrantClient(path=str(QDRANT_DATA_DIR))
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+    
+    if qdrant_url and qdrant_api_key:
+        print(f"[INFO] Kết nối Qdrant Cloud tại {qdrant_url}")
+        client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+    else:
+        print(f"[INFO] Kết nối Qdrant Local tại {QDRANT_DATA_DIR}")
+        os.makedirs(QDRANT_DATA_DIR, exist_ok=True)
+        client = QdrantClient(path=str(QDRANT_DATA_DIR))
     
     # Xử lý làm sạch collection nếu có yêu cầu ghi đè
     if overwrite and client.collection_exists(collection_name):

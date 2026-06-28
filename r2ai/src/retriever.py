@@ -19,12 +19,13 @@ class LegalRetriever:
             alpha=0.5
         )
         
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[INFO] Khởi tạo BGE-Reranker-M3 trên thiết bị: {device.upper()}")
+        # [FIX OOM]: Ép Reranker chạy trên CPU để nhường 12GB VRAM cho LLM Qwen
+        device = "cpu"
+        print(f"[INFO] Khởi tạo BGE-Reranker trên thiết bị: {device.upper()} (Tiết kiệm VRAM)")
         
-        model_kwargs = {"torch_dtype": torch.float16} if device == "cuda" else {}
+        model_kwargs = {}
         self.reranker = CrossEncoder(
-            "BAAI/bge-reranker-m3", 
+            "BAAI/bge-reranker-v2-m3", 
             max_length=512, 
             device=device,
             model_kwargs=model_kwargs
