@@ -40,7 +40,7 @@ QUY TẮC BẮT BUỘC (CRITICAL RULES):
 """
 
 class LegalGenerator:
-    def __init__(self, model: str = "Qwen/Qwen2.5-7B-Instruct"):
+    def __init__(self, model: str = "Qwen/Qwen2.5-3B-Instruct"):
         print(f"[INFO] Khởi tạo LLM HuggingFace (Model: {model}, 4-bit Quantization)")
         
         hf_token = os.getenv("HUGGINGFACE_TOKEN_API")

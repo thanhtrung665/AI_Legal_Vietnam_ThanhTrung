@@ -23,7 +23,7 @@ def init_settings():
     """Khởi tạo cấu hình LlamaIndex tối ưu VRAM."""
     
     # [FIX OOM]: Ép Embedding chạy trên CPU để nhường 12GB VRAM cho LLM Qwen
-    device = "cpu"
+    device = "cuda"
     print(f"[INFO] Khởi tạo Embedding Model (BGE-M3) trên thiết bị: {device.upper()} (Tiết kiệm VRAM)")
     
     # Set HF Token from .env if available
