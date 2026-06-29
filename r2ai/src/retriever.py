@@ -19,11 +19,11 @@ class LegalRetriever:
             alpha=0.5
         )
         
-        # [FIX OOM]: Ép Reranker chạy trên CPU để nhường 12GB VRAM cho LLM Qwen
-        device = "cpu"
-        print(f"[INFO] Khởi tạo BGE-Reranker trên thiết bị: {device.upper()} (Tiết kiệm VRAM)")
+        # [FIX OOM]: Sử dụng GPU để Reranker chạy nhanh hơn (đã kiểm tra đủ VRAM)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"[INFO] Khởi tạo BGE-Reranker trên thiết bị: {device.upper()} (Tăng tốc độ)")
         
-        model_kwargs = {}
+        model_kwargs = {"torch_dtype": torch.float16}
         self.reranker = CrossEncoder(
             "BAAI/bge-reranker-v2-m3", 
             max_length=512, 
@@ -47,7 +47,7 @@ class LegalRetriever:
         
         # [FIX 2]: Dùng Sigmoid để ép điểm Logits về dải xác suất [0, 1]
         import torch.nn as nn
-        rerank_scores = self.reranker.predict(pairs, activation_function=nn.Sigmoid())
+        rerank_scores = self.reranker.predict(pairs, batch_size=8, activation_function=nn.Sigmoid())
         
         for node, score in zip(hybrid_nodes, rerank_scores):
             node.score = float(score)
