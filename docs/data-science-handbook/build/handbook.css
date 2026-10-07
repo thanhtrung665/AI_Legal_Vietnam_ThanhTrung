@@ -50,10 +50,10 @@ nav#TOC > ul > li > ul > li > ul { display: none; }
 /* Pandoc syntax highlighting (pygments-like) */
 code span.kw, code span.cf { color: #0550ae; font-weight: bold; }
 code span.dt { color: #8250df; } code span.st, code span.ss, code span.ch, code span.vs { color: #0a3069; }
-code span.co { color: #6e7781; font-style: italic; } code span.dv, code span.fl, code span.bn { color: #953800; }
+code span.co { color: #6e7781; font-style: normal; } code span.dv, code span.fl, code span.bn { color: #953800; }
 code span.fu { color: #6639ba; } code span.bu { color: #0550ae; } code span.im { color: #cf222e; }
 code span.op { color: #24292f; } code span.at { color: #116329; } code span.va { color: #953800; }
-code span.ot { color: #116329; } code span.dc { color: #6e7781; font-style: italic; }
+code span.ot { color: #116329; } code span.dc { color: #6e7781; font-style: normal; }
 /* Override pandoc's print rule (text-indent/padding hack) that shifts every code line right */
 pre > code.sourceCode > span { display: inline !important; text-indent: 0 !important; padding-left: 0 !important; }
 pre > code.sourceCode { white-space: pre-wrap !important; }

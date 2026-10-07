@@ -21,7 +21,7 @@ pandoc "$OUT_MD" \
   --from gfm+tex_math_dollars+pipe_tables \
   --to html5 --standalone --toc --toc-depth=2 --mathml \
   --highlight-style=pygments \
-  --metadata title="Data Science End-to-End Handbook" --metadata lang=vi \
+  --metadata title="Data Science End-to-End Handbook" --metadata lang=vi-VN \
   --include-before-body="$HERE/cover.html" \
   --css="$HERE/handbook.css" --embed-resources \
   -o "$OUT_HTML"

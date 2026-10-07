@@ -4,3 +4,4 @@ models/
 reports/
 data/
 *.egg-info/
+catboost_info/

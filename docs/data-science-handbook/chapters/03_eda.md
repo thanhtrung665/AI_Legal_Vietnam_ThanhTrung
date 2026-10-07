@@ -170,8 +170,8 @@ plt.tight_layout()
 x = np.log(train["data_usage_gb"].dropna())
 print("Shapiro–Wilk (n=500) p =", round(stats.shapiro(x.sample(500, random_state=0)).pvalue, 4))
 print("D'Agostino K² (toàn bộ) p =", round(stats.normaltest(x).pvalue, 4))
-ad = stats.anderson(x, dist="norm")
-print("Anderson–Darling A² =", round(ad.statistic, 3), "| giá trị tới hạn 5% =", ad.critical_values[2])
+ad = stats.anderson(x, dist="norm", method="interpolate")    # SciPy >= 1.17: phải chọn cách tính p-value
+print("Anderson–Darling A² =", round(ad.statistic, 3), "| p ≈", ad.pvalue)
 ```
 
 > **[Kinh nghiệm]** Với n lớn, kiểm định chuẩn **gần như luôn bác bỏ** vì độ lệch nhỏ không đáng kể vẫn có ý nghĩa thống kê. Với n nhỏ thì ngược lại, thiếu power. Hãy ra quyết định bằng **Q-Q plot + độ lớn skew/kurtosis**. p-value chỉ là thông tin phụ.
@@ -258,7 +258,7 @@ def woe_iv(frame: pd.DataFrame, feature: str, target: str, bins: int = 10) -> tu
     tab = pd.crosstab(x, frame[target])
     good = (tab[0] + 0.5) / (tab[0].sum() + 0.5)                     # +0.5: làm trơn tránh log(0)
     bad = (tab[1] + 0.5) / (tab[1].sum() + 0.5)
-    table = pd.DataFrame({"n": tab.sum(1), "event_rate": tab[1] / tab.sum(1), "woe": np.log(good / bad)})
+    table = pd.DataFrame({"n": tab.sum(axis=1), "event_rate": tab[1] / tab.sum(axis=1), "woe": np.log(good / bad)})
     return table, float(((good - bad) * table["woe"]).sum())
 
 

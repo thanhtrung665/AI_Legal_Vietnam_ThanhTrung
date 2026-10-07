@@ -420,7 +420,8 @@ from sklearn.feature_selection import RFECV, SelectFromModel, SelectKBest, mutua
 noise = pd.DataFrame(rng.normal(size=(len(Xt), 10)), columns=[f"noise_{i}" for i in range(10)])
 Xsel = pd.concat([pd.DataFrame(Xt, columns=names), noise], axis=1)
 
-l1 = SelectFromModel(LogisticRegression(penalty="l1", solver="liblinear", C=0.02)).fit(Xsel, y_train)
+# scikit-learn >= 1.8: `penalty` bị deprecate -> dùng l1_ratio=1 cho L1 (liblinear/saga hỗ trợ)
+l1 = SelectFromModel(LogisticRegression(l1_ratio=1, solver="liblinear", C=0.02)).fit(Xsel, y_train)
 print("L1 giữ:", [c for c, k in zip(Xsel.columns, l1.get_support()) if k])   # L1 vẫn có thể giữ vài biến nhiễu
 
 rfecv = RFECV(LogisticRegression(max_iter=2000), step=2, cv=cv, scoring="average_precision",

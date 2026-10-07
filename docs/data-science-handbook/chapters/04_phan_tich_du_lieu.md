@@ -467,8 +467,11 @@ signups = pd.Series(200 + 0.2 * np.arange(365) + 25 * np.sin(2 * np.pi * np.aran
 stl = STL(signups, period=7, robust=True).fit()                  # Trend + Seasonal + Residual
 strength_seasonal = max(0, 1 - stl.resid.var() / (stl.seasonal + stl.resid).var())
 print("Độ mạnh mùa vụ tuần (Hyndman):", round(strength_seasonal, 3))
-print("ADF p  =", round(adfuller(signups)[1], 4), "(H0: có nghiệm đơn vị / không dừng)")
-print("KPSS p =", round(kpss(signups, regression="c", nlags="auto")[1], 4), "(H0: dừng)")
+# statsmodels 0.15: result_object=True trả về đối tượng có tên trường (sẽ là mặc định từ 0.16)
+adf = adfuller(signups, result_object=True)
+kp = kpss(signups, regression="c", nlags="auto", result_object=True)
+print("ADF p  =", round(adf.pvalue, 4), "(H0: có nghiệm đơn vị / không dừng)")
+print("KPSS p =", round(kp.pvalue, 4), "(H0: dừng; p bị chặn ở 0.01 bởi bảng tra)")
 print("ACF lag 7 =", round(acf(signups.diff().dropna(), nlags=7)[7], 3))
 ```
 
